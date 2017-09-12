@@ -55,4 +55,13 @@ int creer_serveur(int port)
     }
   return 0;
 }
+
+void initialiser_signaux(void)
+{
+  if(signal(SIGPIPE, SIG_IGN) == SIG_ERR)
+     {
+       perror("signal");
+       exit(-1);
+     }
+}
 #endif
