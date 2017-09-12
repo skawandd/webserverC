@@ -1,0 +1,2 @@
+socket.o: socket.c serveur.h
+main.o: main.c serveur.h
