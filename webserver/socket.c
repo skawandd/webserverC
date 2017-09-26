@@ -51,13 +51,15 @@ int creer_serveur(int port){
 				return -1;
 			}
 			
-			while(1){
+			fprintf(stderr, "%d\n", getpid());
+			do{
 			  	printf("Connexion OK\n");
 			  	sleep(1);
-			  	write(socket_client, message_bienvenue, strlen(message_bienvenue));
-			}
+			}while(write(socket_client, message_bienvenue, strlen(message_bienvenue)) > 0);
+			exit(0);
 
 		}
+		wait(&pid);
 
 	}
 
@@ -65,7 +67,21 @@ int creer_serveur(int port){
 
 }
 
+void traitement_signal(int sig){
+	waitpid(-1, &sig, WNOHANG);
+}
+
 void initialiser_signaux(void){
+
+	struct sigaction sa;
+	sa.sa_handler = traitement_signal;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = SA_RESTART;
+	if(sigaction(SIGCHLD, &sa, NULL) == -1){
+		perror("sigaction(SIGCHLD)");
+		exit(-1);
+	}
+
 	if(signal(SIGPIPE, SIG_IGN) == SIG_ERR){
 		perror("signal");
 		exit(-1);

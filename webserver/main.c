@@ -1,7 +1,8 @@
 #include "socket.h"
+
 int main(void){
 	int port = 8080;
-	void initialiser_signaux(void);
+	initialiser_signaux();
 	creer_serveur(port);
 	return 0;
 }
