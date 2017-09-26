@@ -8,6 +8,7 @@ int creer_serveur(int port){
 	int socket_client = -1;
 	const char *message_bienvenue = "Bonjour, bienvenue sur mon serveur\n";
 	int optval = 1;
+	pid_t pid;
 
 	socket_serveur = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -38,14 +39,26 @@ int creer_serveur(int port){
 	while(1){
 		printf("Tentative connexion...\n");
 		socket_client = accept(socket_serveur, NULL, NULL);
-	
-		if(socket_client == -1){
-			perror("accept");
-			return -1;
+		
+		pid = fork();
+
+		// Traitement pour le pere
+		if(pid != 0){
+			close(socket_client);
+		}else{
+			if(socket_client == -1){
+				perror("accept");
+				return -1;
+			}
+			
+			while(1){
+			  	printf("Connexion OK\n");
+			  	sleep(1);
+			  	write(socket_client, message_bienvenue, strlen(message_bienvenue));
+			}
+
 		}
-	  	printf("Connexion OK\n");
-	  	sleep(1);
-	  	write(socket_client, message_bienvenue, strlen(message_bienvenue));
+
 	}
 
 	return 0;
