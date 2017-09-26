@@ -1,6 +1,6 @@
 #ifndef __SOCKET_H__
 #define __SOCKET_H__
-#include "serveur.h"
+#include "socket.h"
 
 int creer_serveur(int port)
 {
