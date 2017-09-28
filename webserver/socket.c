@@ -1,14 +1,9 @@
-#ifndef __SOCKET_H__
-#define __SOCKET_H__
 #include "socket.h"
 
 int creer_serveur(int port){
 
 	int socket_serveur = -1;
-	int socket_client = -1;
-	const char *message_bienvenue = "Bonjour, bienvenue sur mon serveur\n";
 	int optval = 1;
-	pid_t pid;
 
 	socket_serveur = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -35,57 +30,54 @@ int creer_serveur(int port){
 		return -1;
 	}
 
-
-	while(1){
-		printf("Tentative connexion...\n");
-		socket_client = accept(socket_serveur, NULL, NULL);
-		
-		pid = fork();
-
-		// Traitement pour le pere
-		if(pid != 0){
-			close(socket_client);
-		}else{
-			if(socket_client == -1){
-				perror("accept");
-				return -1;
-			}
-			
-			fprintf(stderr, "%d\n", getpid());
-			do{
-			  	printf("Connexion OK\n");
-			  	sleep(1);
-			}while(write(socket_client, message_bienvenue, strlen(message_bienvenue)) > 0);
-			exit(0);
-
-		}
-		wait(&pid);
-
-	}
+	boucle_serveur(socket_serveur);
 
 	return 0;
 
 }
 
-void traitement_signal(int sig){
-	waitpid(-1, &sig, WNOHANG);
-}
+void boucle_serveur(int socket_serveur){
 
-void initialiser_signaux(void){
+	FILE* client;
+	pid_t pid;
+	const char *message_bienvenue = "<pawnee>\n";
+	char buffer[BUFFER_SIZE];
 
-	struct sigaction sa;
-	sa.sa_handler = traitement_signal;
-	sigemptyset(&sa.sa_mask);
-	sa.sa_flags = SA_RESTART;
-	if(sigaction(SIGCHLD, &sa, NULL) == -1){
-		perror("sigaction(SIGCHLD)");
-		exit(-1);
+	while(1){
+		printf("Tentative connexion...\n");
+
+		client = getNextClient(socket_serveur);
+
+		pid = fork();
+
+		// Traitement pour le pere
+		if(pid != 0){
+			fclose(client);
+		}else{
+			if(client == NULL){
+				perror("FILE");
+				return;
+			}
+		
+			fprintf(stderr, "%d\n", getpid());
+
+			while(fgets(buffer, BUFFER_SIZE, client) > 0){
+				strcat(buffer, message_bienvenue);
+				fprintf(client, "%s", buffer);
+			}
+
+			exit(0);
+
+		}
+		wait(&pid);
 	}
 
-	if(signal(SIGPIPE, SIG_IGN) == SIG_ERR){
-		perror("signal");
-		exit(-1);
-	}
 }
 
-#endif
+FILE* getNextClient(int socket_serveur){
+	int socket_client = -1;
+	FILE* client;
+	socket_client = accept(socket_serveur, NULL, NULL);
+	client = fdopen(socket_client, (const char*)"w+");
+	return client;
+}

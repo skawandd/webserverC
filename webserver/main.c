@@ -1,4 +1,5 @@
 #include "socket.h"
+#include "signaux.h"
 
 int main(void){
 	int port = 8080;
