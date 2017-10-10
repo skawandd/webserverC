@@ -45,7 +45,6 @@ void boucle_serveur(int socket_serveur){
 
 	while(1){
 		printf("Tentative connexion...\n");
-
 		client = getNextClient(socket_serveur);
 
 		pid = fork();
@@ -61,7 +60,7 @@ void boucle_serveur(int socket_serveur){
 		
 			fprintf(stderr, "%d\n", getpid());
 
-			while(fgets(buffer, BUFFER_SIZE, client) > 0){
+			while(fgets(buffer, BUFFER_SIZE, client) != NULL){
 				strcat(buffer, message_bienvenue);
 				fprintf(client, "%s", buffer);
 			}
