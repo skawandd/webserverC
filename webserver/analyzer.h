@@ -7,7 +7,6 @@
 #include <string.h>
 #include <sys/wait.h>
 #include <unistd.h>
-#include "others.h"
 
 #define NBRE_METHOD 2
 #define GET 0
@@ -18,5 +17,6 @@ char* allocate(char*str, int character, int occur);
 int getMethod(char* firstLine);
 float getVersion(char *firstLine);
 char* getRequestURI(char *firstLine);
+int analyze(char *request);
 
 #endif

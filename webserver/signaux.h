@@ -6,6 +6,8 @@
 #include <signal.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include "analyzer.h"
+#include "answer.h"
 
 void traitement_signal(int sig);
 void initialiser_signaux();

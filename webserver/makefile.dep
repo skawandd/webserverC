@@ -1,4 +1,5 @@
-socket.o: socket.c socket.h signaux.h
-signaux.o: signaux.c signaux.h
-main.o: main.c socket.h signaux.h
+socket.o: socket.c socket.h signaux.h analyzer.h answer.h
+signaux.o: signaux.c signaux.h analyzer.h answer.h
+answer.o: answer.c answer.h
+main.o: main.c socket.h signaux.h analyzer.h answer.h
 analyzer.o: analyzer.c analyzer.h

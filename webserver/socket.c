@@ -40,8 +40,10 @@ void boucle_serveur(int socket_serveur){
 
 	FILE* client;
 	pid_t pid;
-	const char *message_bienvenue = "<pawnee>\n";
 	char buffer[BUFFER_SIZE];
+	char* total = NULL;
+	char* result;
+	int retCode;
 
 	while(1){
 		printf("Tentative connexion...\n");
@@ -61,9 +63,20 @@ void boucle_serveur(int socket_serveur){
 			fprintf(stderr, "%d\n", getpid());
 
 			while(fgets(buffer, BUFFER_SIZE, client) != NULL){
-				strcat(buffer, message_bienvenue);
-				fprintf(client, "%s", buffer);
+				int sizeBuffer, sizeTotal;
+				sizeTotal = (total == NULL ? 0 : strlen(total));
+				sizeBuffer = strlen(buffer);
+				total = (char*)realloc(total, sizeTotal+sizeBuffer+1);
+				memcpy( total+(sizeTotal > 0 ? sizeTotal : 0), buffer, sizeBuffer+1);
+				if(strstr(total, "\r\n\r\n"))
+					break;
 			}
+
+			retCode = analyze(total);
+			result = getAnswer(retCode);
+			fprintf(stdout, "ret code = %d and answer = \n%s\n", retCode, result);
+			fprintf(client, "%s", result);
+			free(total);
 
 			exit(0);
 
