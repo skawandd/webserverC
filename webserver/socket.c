@@ -42,10 +42,10 @@ void boucle_serveur(int socket_serveur){
 	pid_t pid;
 	char buffer[BUFFER_SIZE];
 	char* total = NULL;
-	char* result;
 	int retCode;
 
 	while(1){
+		http_request req;
 		printf("Tentative connexion...\n");
 		client = getNextClient(socket_serveur);
 
@@ -72,10 +72,9 @@ void boucle_serveur(int socket_serveur){
 					break;
 			}
 
-			retCode = analyze(total);
-			result = getAnswer(retCode);
-			fprintf(stdout, "ret code = %d and answer = \n%s\n", retCode, result);
-			fprintf(client, "%s", result);
+			retCode = analyze(total, &req);
+			getAnswer(client, retCode, &req);
+			//fprintf(client, "%s", result);
 			free(total);
 
 			exit(0);
