@@ -75,6 +75,9 @@ int analyze(char *request){
 	if(getMethod(buffer) == -1) return 400;
 	if( !(getVersion(buffer) != 1.0 && getVersion(buffer) != 1.1) ) return 400;
 
-	return 200;	
+	if(getMethod(buffer) == 0 && strcmp(getRequestURI(buffer), (const char*)"/") == 0)
+		return 200;
+	else
+		return 404;
 
 }

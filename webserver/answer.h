@@ -2,5 +2,6 @@
 #include <stdlib.h>
 
 char* getAnswer(int retCode);
-char* get40x();
-char* get20x();
+char* get200();
+char* get400();
+char* get404();
